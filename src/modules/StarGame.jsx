@@ -40,11 +40,12 @@ import { useState } from "react";
   
 
 
+
   const PlayNumber = props =>(
     <button 
     className="number" 
     style={{backgroundColor:colors[[props.status]]}} 
-    onClick={()=>console.log(props.number)}
+    onClick={()=>props.onClick(props.number, props.status)}
     >
 
     {props.number}
@@ -78,6 +79,25 @@ const StarGame = () => {
             return 'available'
     };
 
+
+
+    const onNumberClick = (number, counterStatus) =>{
+      if(counterStatus==='used'){
+        return;
+      }
+      const newCandidateNums = CandidateNums.concat(number);
+      if(utils.sum(newCandidateNums)!== stars ){
+        setCandidateNums(newCandidateNums);
+      }else{
+        const newAvalibleNums = avalibleNums.filter(
+          n=> !newCandidateNums.includes(n)
+        );
+        setStars(utils.randomSumIn(newAvalibleNums,9));
+        setAvalibleNums(newAvalibleNums);
+        setCandidateNums([]);
+      }
+          }
+      
     return (
       <div className="game">
         <div className="help">
@@ -85,14 +105,16 @@ const StarGame = () => {
         </div>
         <div className="body">
           <div className="left">
-            <StarsDisplay  count={stars} />
+          <StarsDisplay  count={stars} />
           </div>
           <div className="right">
           {utils.range(1, 9).map(number =>
             <PlayNumber 
             key={number} 
             status={numberStatus(number)}
-            number={number} />
+            number={number} 
+            onClick={onNumberClick}
+            />            
           )}
           </div>
         </div>
@@ -102,11 +124,3 @@ const StarGame = () => {
   };
   
 export default StarGame;
-
-
-
-
-  
-
-
-  
